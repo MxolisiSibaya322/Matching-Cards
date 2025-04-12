@@ -15,7 +15,13 @@ second.
 const video = document.getElementById("loadingVideo");
 const overlay = document.getElementById("videoOverlay");
 const background = document.querySelector(".blurred-background");
-const gameSpace = document.querySelector(".game-space")
+const gameSpace = document.querySelector(".game-space");
+let cards =[]
+let resetTimeout ;
+cards = getShuffledCards(cards);
+let selectedCards = []
+let totalScore = 0
+let canClick = true;
 video.addEventListener("ended", () => {
     overlay.classList.add("fade-out");
 
@@ -31,8 +37,7 @@ video.addEventListener("ended", () => {
   })
 
 
- let cards =[]
- let resetTimeout ;
+
  function getShuffledCards(array){
     for (let i = 0; i < 8; i++) {
         const letter = String.fromCharCode(65 + i).toUpperCase(); 
@@ -44,9 +49,7 @@ video.addEventListener("ended", () => {
       }
       return array;
  }
- cards = getShuffledCards(cards);
- let selectedCards = []
- let totalScore = 0
+
  function playGame(cards){
     gameSpace.innerHTML = "";
     for(let i = 0;i<cards.length;i++){
@@ -60,7 +63,8 @@ video.addEventListener("ended", () => {
 
         card.addEventListener("click",()=>{
             const index = parseInt(card.getAttribute("card-id"));
-            if (selectedCards.includes(index) || !canClick) return;
+            const alreadyPaired =card.style.background === "green";
+            if (selectedCards.includes(index) || !canClick||alreadyPaired) return;
             card.innerHTML = `<p class="letter">${cards[index]}</p>`; 
             card.style.background = "red";
             card.style.color = "white";
@@ -71,7 +75,7 @@ video.addEventListener("ended", () => {
 
     
  }
- let canClick = true;
+
 
 function checkPair(index) {
   if (!canClick) return;
@@ -83,12 +87,21 @@ function checkPair(index) {
     
     if (cards[firstIdx] === cards[secondIdx]) {
       totalScore++;
+      document.querySelectorAll(".card").forEach((card)=>{
+        const index = parseInt(card.getAttribute("card-id"));
+
+        if(index === firstIdx|| index ===secondIdx){
+          card.style.background = "green";
+        }
+      })
       selectedCards = [];
 
-      if (totalScore === 8) {
-        setTimeout(() => {
-          alert("CONGRATULATIONS! You matched all the cards.");
-        }, 300);
+      if (totalScore === 8) { 
+          resetTimeout =setTimeout(() => {
+            alert("CONGRATULATIONS! You matched all the cards.");
+          window.location.reload();
+        }, 1000);
+        
       }
 
     } else {
