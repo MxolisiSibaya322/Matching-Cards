@@ -10,6 +10,7 @@ body{
 .card:hover{
     cursor: pointer;
 }
+
 .card {
     border: 1px solid #000000;
     border-radius: 5%;
